@@ -1,0 +1,32 @@
+parameters:
+  - name: artifactName
+    type: string
+
+stages:
+  - stage: BuildPackage
+    displayName: "Build and Run tests"
+    jobs:
+      - job: CopyFiles
+        pool: 
+          vmImage: "windows-latest"
+        displayName: "Copy files"
+        steps:
+          - checkout: self
+
+          - task: CopyFiles@2
+            displayName: "Copy B2C Html templates"
+            inputs:
+              sourceFolder: "$(Build.SourcesDirectory)/b2c/html"
+              Contents: "**/*"
+              targetFolder: "$(Build.ArtifactStagingDirectory)/templates"
+
+          - task: CopyFiles@2
+            displayName: "Copy Bicep File"
+            inputs:
+              sourceFolder: "$(Build.SourcesDirectory)/azure/infra-as-code"
+              Contents: "**/*"
+              targetFolder: "$(Build.ArtifactStagingDirectory)/bicep"
+
+          - publish: $(Build.ArtifactStagingDirectory)
+            artifact: ${{ parameters.artifactName }}
+            displayName: "Publish Artifacts"

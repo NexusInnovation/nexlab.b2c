@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TrustFrameworkPolicy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                      xmlns="http://schemas.microsoft.com/online/cpim/schemas/2013/06"
+                      PolicySchemaVersion="0.3.0.0"
+                      TenantId="{{tenantName}}.onmicrosoft.com"
+                      PolicyId="B2C_1A_SignUpOnInvitation"
+                      DeploymentMode="Development"
+                      UserJourneyRecorderEndpoint="urn:journeyrecorder:applicationinsights" 
+                      PublicPolicyUri="http://{{tenantName}}.onmicrosoft.com/SignUpOnInvitation">
+  <BasePolicy>
+    <TenantId>{{tenantName}}.onmicrosoft.com</TenantId>
+    <PolicyId>B2C_1A_TrustFrameworkExtensions</PolicyId>
+  </BasePolicy>
+  <ClaimsProviders>
+    <ClaimsProvider>
+      <DisplayName>Local Account</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="LocalAccountSignUpWithReadOnlyEmail">
+          <DisplayName>Email signup</DisplayName>
+          <Protocol Name="Proprietary"
+                    Handler="Web.TPEngine.Providers.SelfAssertedAttributeProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="ContentDefinitionReferenceId">api.localaccountsignup</Item>
+            <Item Key="language.button_continue">Create</Item>
+            <Item Key="EnforceEmailVerification">False</Item>
+            <Item Key="setting.showCancelButton">false</Item>
+          </Metadata>
+          <InputClaimsTransformations>
+            <InputClaimsTransformation ReferenceId="CopyEmailAddress" />
+          </InputClaimsTransformations>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="readOnlyEmail" />
+            <InputClaim ClaimTypeReferenceId="email" />
+          </InputClaims>
+          <DisplayClaims>
+            <DisplayClaim ClaimTypeReferenceId="readOnlyEmail" Required="true" />
+            <DisplayClaim ClaimTypeReferenceId="newPassword"
+                         Required="true" />
+            <DisplayClaim ClaimTypeReferenceId="reenterPassword"
+                         Required="true" />
+          </DisplayClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="objectId" />
+            <OutputClaim ClaimTypeReferenceId="email"
+                         Required="true" />
+            <OutputClaim ClaimTypeReferenceId="readOnlyEmail"
+                         Required="true" />
+            <OutputClaim ClaimTypeReferenceId="newPassword"
+                         Required="true" />
+            <OutputClaim ClaimTypeReferenceId="reenterPassword"
+                         Required="true" />
+            <OutputClaim ClaimTypeReferenceId="executed-SelfAsserted-Input"
+                         DefaultValue="true" />
+            <OutputClaim ClaimTypeReferenceId="authenticationSource" />
+            <OutputClaim ClaimTypeReferenceId="newUser" />
+          </OutputClaims>
+          <ValidationTechnicalProfiles>
+            <ValidationTechnicalProfile ReferenceId="AAD-UserWriteUsingLogonEmail" />
+          </ValidationTechnicalProfiles>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>ID Token Hint ClaimsProvider</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="IdTokenHint_ExtractClaims">
+          <DisplayName> ID Token Hint TechnicalProfile</DisplayName>
+          <Protocol Name="None" />
+          <Metadata>
+            <!-- Todo: Parametrized Token Audience and issuer : -->
+            <Item Key="IdTokenAudience">{{tokenIssuerApplicationId}}</Item>
+            <Item Key="issuer">https://{{tenantName}}.b2clogin.com/{{tenantId}}/v2.0/</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="client_secret"
+                 StorageReferenceId="B2C_1A_IdTokenHintKey" />
+          </CryptographicKeys>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="email" />
+          </OutputClaims>
+        </TechnicalProfile>
+         <TechnicalProfile Id="SetUnsolicitedMessaged">
+          <DisplayName>Create Unsolicited Message</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.ClaimsTransformationProtocolProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="errorMessage" />
+          </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="CreateUnsolicitedErrorMessage" />
+          </OutputClaimsTransformations>
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+  </ClaimsProviders>
+  <UserJourneys>
+    <UserJourney Id="SignUpOnInvitation">
+      <OrchestrationSteps>
+        <!-- Step 1 : Extract ID Token JWT -->
+        <OrchestrationStep Order="1"
+                           Type="GetClaims"
+                           CpimIssuerTechnicalProfileReferenceId="IdTokenHint_ExtractClaims" />
+        <!-- Step 2 : If email is not in token set error message -->
+        <OrchestrationStep Order="2"
+                           Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist"
+                          ExecuteActionsIf="true">
+              <Value>email</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="SetUnsolicitedMessaged" TechnicalProfileReferenceId="SetUnsolicitedMessaged" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        <!-- Step 3 : If email is not in token show error page -->
+        <OrchestrationStep Order="3"
+                           Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist"
+                          ExecuteActionsIf="true">
+              <Value>email</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="SelfAsserted-Unsolicited"
+                            TechnicalProfileReferenceId="SelfAsserted-Unsolicited" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        <!-- Step 4 : Show self-asserted sign-up page -->
+        <OrchestrationStep Order="4"
+                           Type="ClaimsExchange">
+          <ClaimsExchanges>
+            <ClaimsExchange Id="LocalAccountSignUpWithReadOnlyEmail"
+                            TechnicalProfileReferenceId="LocalAccountSignUpWithReadOnlyEmail" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        <!-- Step 5 : Issue token -->
+        <OrchestrationStep Order="5"
+                           Type="SendClaims"
+                           CpimIssuerTechnicalProfileReferenceId="JwtIssuer" />
+      </OrchestrationSteps>
+      <ClientDefinition ReferenceId="DefaultWeb" />
+    </UserJourney>
+  </UserJourneys>
+  <RelyingParty>
+    <DefaultUserJourney ReferenceId="SignUpOnInvitation" />
+    <UserJourneyBehaviors>
+      <!-- Todo: AppInsights placeholder -->
+      <JourneyInsights TelemetryEngine="ApplicationInsights" InstrumentationKey="87e0ab53-c5e6-41a3-8c5b-d1c43d9e4c60" DeveloperMode="true" ClientEnabled="false" ServerEnabled="true" TelemetryVersion="1.0.0" />
+    </UserJourneyBehaviors>
+    <TechnicalProfile Id="PolicyProfile">
+      <DisplayName>PolicyProfile</DisplayName>
+      <Protocol Name="OpenIdConnect" />
+      <InputClaims>
+        <InputClaim ClaimTypeReferenceId="email" />
+      </InputClaims>
+      <OutputClaims>
+        <OutputClaim ClaimTypeReferenceId="email" />
+        <OutputClaim ClaimTypeReferenceId="objectId"
+                     PartnerClaimType="sub" />
+        <OutputClaim ClaimTypeReferenceId="tenantId"
+                     AlwaysUseDefaultValue="true"
+                     DefaultValue="{Policy:TenantObjectId}" />
+      </OutputClaims>
+      <SubjectNamingInfo ClaimType="sub" />
+    </TechnicalProfile>
+  </RelyingParty>
+</TrustFrameworkPolicy>
