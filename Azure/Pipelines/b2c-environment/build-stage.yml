@@ -16,14 +16,14 @@ stages:
           - task: CopyFiles@2
             displayName: "Copy B2C Html templates"
             inputs:
-              sourceFolder: "$(Build.SourcesDirectory)/b2c/html"
+              sourceFolder: "$(Build.SourcesDirectory)/Azure/b2c/html"
               Contents: "**/*"
               targetFolder: "$(Build.ArtifactStagingDirectory)/templates"
 
           - task: CopyFiles@2
             displayName: "Copy Bicep File"
             inputs:
-              sourceFolder: "$(Build.SourcesDirectory)/azure/infra-as-code"
+              sourceFolder: "$(Build.SourcesDirectory)/Azure/Infra-as-code"
               Contents: "**/*"
               targetFolder: "$(Build.ArtifactStagingDirectory)/bicep"
 

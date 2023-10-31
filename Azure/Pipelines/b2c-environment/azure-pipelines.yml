@@ -9,8 +9,8 @@ trigger:
       - b2c-*
   paths:
     include:
-      - b2c/*
-      - azure/*
+      - Azure/Infra-as-code/*
+      - Azure/Pipelines/*
 
 variables:
   - group: B2CClient-Common
@@ -27,19 +27,19 @@ variables:
       - group: B2CClient-Staging
 
 stages:
-  - template: "/azure/devops/b2c/build-stage.yml"
+  - template: "/Azure/Pipelines/b2c-environment/build-stage.yml"
     parameters:
       artifactName: ${{ variables.artifactName }}
 
-  - template: "/azure/devops/b2c/deploy-stage.yml"
+  - template: "/Azure/Pipelines/b2c-environment/deploy-stage.yml"
     parameters:
       name: "B2CClientB2CDeployStaging"
       displayName: "B2C Client B2C Staging"
       artifactName: ${{ variables.artifactName }}
       environment: ${{ variables.BUILD_ENV }}
-      condition: "eq(variables['build.sourceBranch'], 'refs/heads/main')"
+      condition: "true"
   
-  - template: "/azure/devops/b2c/deploy-stage.yml"
+  - template: "/Azure/Pipelines/b2c-environment/deploy-stage.yml"
     parameters:
       name: "B2CClientB2CDeployProduction"
       displayName: "B2C Client B2C Production"
