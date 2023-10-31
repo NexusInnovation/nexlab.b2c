@@ -46,6 +46,16 @@ stages:
                     scriptLocation: inlineScript
                     inlineScript: |
                       az --version
+                      $directoryExists = $false
+                      Write-Host "Checking if B2C tenant exists."
+                      try {
+                          az login --tenant $tenantUrl --allow-no-subscriptions --output none 2>$null
+                          $directoryExists = $true
+                          Write-Host "The tenant exists."
+                      }
+                      catch {
+                          Write-Host "The tenant does not exist."
+                      }
                       $rgExists = az group exists -n 'rg-$(applicationName)$(pullRequestId)-$(environment)'
                       az deployment sub create --location $(B2CTenantLocation) `
                         --template-file "$(Pipeline.Workspace)\${{ parameters.artifactName }}\Infra-as-code\main.bicep" `
@@ -53,7 +63,7 @@ stages:
                         applicationName=$(ApplicationName) `
                         location=$(B2CTenantLocation) `
                         resourceGroupExists=$rgExists `
-                        b2cTenantExists=$(B2CTenantLocation) 
+                        b2cTenantExists=$directoryExists
                 - task: AzureFileCopy@5
                   inputs:
                     SourcePath: $(b2cTemplatePath)

@@ -7,6 +7,7 @@
 param environment string
 param location string
 param resourceGroupExists bool
+param b2cTenantExists bool
 param applicationName string
 // Optionally set a custom display name for your tenant: {b2cName}.onmicrosoft.com
 param b2cName string = ''
@@ -22,20 +23,45 @@ resource createResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = i
 }
 
 #disable-next-line BCP334 // Unless the application name AND environment are empty strings, this will not be a problem. And if happens, then the problem is elsewhere
-var b2cTenantDisplayName = b2cName == '' ? toLower('${replace(applicationName, '-', '')}') : b2cName
+var b2cTenantName = b2cName == '' ? '${replace(applicationName, '-', '')}${environment}' :  '${b2cName}${environment}'
 
-module azureB2cDirectory 'modules/b2cdirectory.bicep' = {
+module azureB2cDirectory 'modules/b2cdirectory.bicep' = if (!b2cTenantExists) {
   scope: createResourceGroup
   name: 'azureB2CTenantDeployment'
   params: {
-    tenantName: b2cTenantDisplayName
-    b2clocation: 'United States'
+    tenantName: b2cTenantName
+    tenantlocation: 'United States'
+    tenantCountryCode: 'CA'
     applicationName: applicationName
     environment: environment
-    tenantProperties: {
-      displayName: b2cTenantDisplayName
-      countryCode: 'CA'
-    }
   }
 }
-
+// This will host the files to update the default b2c html
+module storageAccount 'modules/storageAccount.bicep' = {
+  scope: createResourceGroup
+  name: 'b2cstorageAccountDeployment'
+  params: {
+    applicationName: applicationName
+    environment: environment
+    properties: {
+      accessTier: 'Hot'
+      allowBlobPublicAccess: true
+      allowCrossTenantReplication: true
+      allowSharedKeyAccess: true
+    }
+    containers: [ { 
+      name: 'templates'
+      publicAccess: 'Blob'
+    }]
+    location: location
+    blobServicePropertiesCors: [
+      {
+        allowedOrigins: ['https://${b2cTenantName}.b2clogin.com']
+        allowedHeaders: ['*']
+        exposedHeaders: ['*']
+        allowedMethods: ['GET', 'OPTIONS']
+        maxAgeInSeconds: 200
+      }
+    ]
+  }
+}
