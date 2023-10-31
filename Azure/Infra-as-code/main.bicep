@@ -9,6 +9,17 @@ param location string
 param resourceGroupExists bool
 param b2cTenantExists bool
 param applicationName string
+@allowed([
+  'Global'
+  'United States'
+  'Europe'
+  'Asia Pacific'
+  'Japan'
+  'Australia'
+])
+param tenantLocation string = 'United States'
+// For more information on possible tenantCountryCode visit: https://learn.microsoft.com/en-us/azure/active-directory-b2c/data-residency
+param tenantCountryCode string = 'CA'
 // Optionally set a custom display name for your tenant: {b2cName}.onmicrosoft.com
 param b2cName string = ''
 
@@ -30,8 +41,8 @@ module azureB2cDirectory 'modules/b2cdirectory.bicep' = if (!b2cTenantExists) {
   name: 'azureB2CTenantDeployment'
   params: {
     tenantName: b2cTenantName
-    tenantlocation: 'United States'
-    tenantCountryCode: 'CA'
+    tenantlocation: tenantLocation
+    tenantCountryCode: tenantCountryCode
     applicationName: applicationName
     environment: environment
   }

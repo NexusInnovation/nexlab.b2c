@@ -16,22 +16,20 @@ stages:
     displayName: ${{ parameters.displayName }}
     condition: and(succeeded(), ${{ parameters.condition }})
     variables:
-      - group: B2C-Common
+      - group: B2CClient-Common
       - ${{ if eq(parameters.environment, 'prd') }}:
-        - group: B2C-Prod
+        - group: B2CClient-Prod
       - ${{ if eq(parameters.environment, 'stg') }}:
-        - group: B2C-Staging
+        - group: B2CClient-Staging
       - name: environment
         value: "${{ parameters.environment }}"
-      - name: location
-        value: "eastus"
       - name: b2cTemplatePath
         value: "$(Pipeline.Workspace)/${{ parameters.artifactName }}/templates"
 
     jobs:
       - deployment: DeployStorageAccount
         displayName: "Deploy Storage Account ${{ parameters.environment }}"
-        environment: $(webAppName)
+        environment: ${{ parameters.environment }}
         pool:
           vmImage: "windows-latest"
         strategy:
@@ -41,7 +39,7 @@ stages:
                 - task: AzureCLI@2
                   displayName: "Create or Update Azure Infrastructure"
                   inputs:
-                    azureSubscription: "B2C-AzureDevOps"
+                    azureSubscription: $(ServicePrincipalName)
                     scriptType: pscore
                     scriptLocation: inlineScript
                     inlineScript: |
@@ -57,17 +55,19 @@ stages:
                           Write-Host "The tenant does not exist."
                       }
                       $rgExists = az group exists -n 'rg-$(applicationName)$(pullRequestId)-$(environment)'
-                      az deployment sub create --location $(B2CTenantLocation) `
+                      az deployment sub create --location $(Location) `
                         --template-file "$(Pipeline.Workspace)\${{ parameters.artifactName }}\Infra-as-code\main.bicep" `
                         --parameters environment=${{ parameters.environment }} `
                         applicationName=$(ApplicationName) `
-                        location=$(B2CTenantLocation) `
+                        location=$(Location) `
+                        tenantLocation=$(B2CTenantLocation) `
+                        tenantLocation=$(B2CTenantCountryCode) `
                         resourceGroupExists=$rgExists `
                         b2cTenantExists=$directoryExists
                 - task: AzureFileCopy@5
                   inputs:
                     SourcePath: $(b2cTemplatePath)
-                    azureSubscription: "B2C-AzureDevOps"
+                    azureSubscription:  $(ServicePrincipalName)
                     Destination: "AzureBlob"
                     storage: "$(applicationName)$(environment)st"
                     ContainerName: "templates"

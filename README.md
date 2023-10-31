@@ -21,5 +21,12 @@ The goal of this project is to facilitate the development and integration for th
 - Id token BE Generation Implementation
 - Rest API Call BE Implementation
 
+## Configuration 
+- Create the service principal
+    In your Azure Devops project settigns a service principal must be configured for Azure Portal.
+- Create the required Library
+- Create the environment
+
+
 ## How to take it further
 - Internationnalisation of Html Pages (to support multiple languages)
