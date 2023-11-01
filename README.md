@@ -17,16 +17,36 @@ The goal of this project is to facilitate the development and integration for th
     - Signup policy includes a Id Token extract step to validate the user has access to the signup page. The user can only signup with the email the invitation was sent to.
 - Custom html page to change the titles of sign-in, sign-up and forgot password pages. 
 
+## Configuration 
+1. Create the service principal
+    
+    In your Azure Devops project settigns a service principal must be configured for Azure Portal.
+1. Create the required Libraries
+    
+    In the `Pipeline > Library`` section, three libraries must be created. The names of which can be replaced in the pipeline files.
+    By default, the required libraries are : `B2CClient-Common`, `B2CClient-Staging` & `B2CClient-Prod`.
+
+    The library must contain the following variables
+    
+    | Name | Description | Value example |
+    | ----- | -----| -------|
+    | ServicePrincipalName | Value of the service principal created in step 1 or your existing Service Principal Name | B2CAzure
+    | Location | Location for the Azure storage account | canadacentral, eastus, etc
+    | ApplicationName | Name used for creating the different azure ressources. Will be suffixed with the environment and prefixed with ressource type | rg-{ApplicationName}-stg
+    | B2CTenantLocation | Location where B2C will store consumer data. | 'United States', 'Europe', etc. [For more information](https://learn.microsoft.com/en-us/azure/active-directory-b2c/data-residency)
+    | B2CTenantCountryCode | Must match the B2CTenant Location. [For more information](https://learn.microsoft.com/en-us/azure/active-directory-b2c/data-residency) | 'CA', 'US' for example will be stored in 'United States'
+    |
+- Create the environments
+
+    In the `Pipeline > Environment`` sections of Azure Devops, two environments must be added. The names of which can be updated in the azure-pipelines file.
+    The required environment by default are : `stg` & `prod`
+
+
 ## What's not included
+- Automatisation of AppRegistration and Policy key creation
+- Automatisation of Sendgrid Template creation
 - Id token BE Generation Implementation
 - Rest API Call BE Implementation
-
-## Configuration 
-- Create the service principal
-    In your Azure Devops project settigns a service principal must be configured for Azure Portal.
-- Create the required Library
-- Create the environment
-
 
 ## How to take it further
 - Internationnalisation of Html Pages (to support multiple languages)
