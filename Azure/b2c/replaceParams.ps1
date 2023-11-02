@@ -6,9 +6,9 @@ param
   [parameter(Mandatory = $true)] [String] $BlobStorageName,
   [parameter(Mandatory = $true)] [String] $SendGridVerifyEmailTemplateId,
   [parameter(Mandatory = $true)] [String] $SendGridFromEmail,
-  [parameter(Mandatory = $false)] [String] $RestApiUrl,
   [parameter(Mandatory = $false)] [String] $TenantId,
-  [parameter(Mandatory = $false)] [String] $TokenIssuerId
+  [parameter(Mandatory = $false)] [String] $TokenIssuerId,
+  [parameter(Mandatory = $false)] [String] $RestApiUrl
 )
 
 $lookupTable = @{

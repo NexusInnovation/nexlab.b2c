@@ -69,7 +69,6 @@
           <DisplayName> ID Token Hint TechnicalProfile</DisplayName>
           <Protocol Name="None" />
           <Metadata>
-            <!-- Todo: Parametrized Token Audience and issuer : -->
             <Item Key="IdTokenAudience">{{tokenIssuerApplicationId}}</Item>
             <Item Key="issuer">https://{{tenantName}}.b2clogin.com/{{tenantId}}/v2.0/</Item>
           </Metadata>
@@ -148,10 +147,6 @@
   </UserJourneys>
   <RelyingParty>
     <DefaultUserJourney ReferenceId="SignUpOnInvitation" />
-    <UserJourneyBehaviors>
-      <!-- Todo: AppInsights placeholder -->
-      <JourneyInsights TelemetryEngine="ApplicationInsights" InstrumentationKey="87e0ab53-c5e6-41a3-8c5b-d1c43d9e4c60" DeveloperMode="true" ClientEnabled="false" ServerEnabled="true" TelemetryVersion="1.0.0" />
-    </UserJourneyBehaviors>
     <TechnicalProfile Id="PolicyProfile">
       <DisplayName>PolicyProfile</DisplayName>
       <Protocol Name="OpenIdConnect" />

@@ -18,16 +18,12 @@
         <TechnicalProfile Id="login-NonInteractive">
           <Metadata>
             <!-- Id généré pour les app registrations : https://learn.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-user-flows?pivots=b2c-custom-policy#register-the-identityexperienceframework-application -->
-            <!-- Todo: AppId : ProxyIdentityExperienceFramework -->
             <Item Key="client_id">{{proxyIdentityExperienceFramework}}</Item>
-            <!-- Todo: AppId : IdentityExperienceFramework -->
             <Item Key="IdTokenAudience">{{identityExperienceFramework}}</Item>
           </Metadata>
           <InputClaims>
-            <!-- Todo: AppId : ProxyIdentityExperienceFramework -->
             <InputClaim ClaimTypeReferenceId="client_id"
                         DefaultValue="{{proxyIdentityExperienceFramework}}" />
-            <!-- Todo: AppId : IdentityExperienceFramework -->
             <InputClaim ClaimTypeReferenceId="resource_id"
                         PartnerClaimType="resource"
                         DefaultValue="{{identityExperienceFramework}}" />
@@ -35,54 +31,8 @@
         </TechnicalProfile>
       </TechnicalProfiles>
     </ClaimsProvider>
-    <ClaimsProvider>
-      <Domain>live.com</Domain>
-      <DisplayName>Microsoft Account</DisplayName>
-      <TechnicalProfiles>
-      <!-- Todo: Enlever cela-->
-        <TechnicalProfile Id="MSA-MicrosoftAccount-OpenIdConnect">
-          <DisplayName>Microsoft Account</DisplayName>
-          <Protocol Name="OpenIdConnect" />
-          <Metadata>
-            <Item Key="ProviderName">https://login.live.com</Item>
-            <Item Key="METADATA">https://login.live.com/.well-known/openid-configuration</Item>
-            <Item Key="response_types">code</Item>
-            <Item Key="response_mode">form_post</Item>
-            <Item Key="scope">openid profile email</Item>
-            <Item Key="HttpBinding">POST</Item>
-            <Item Key="UsePolicyInRedirectUri">false</Item>
-            <!-- Todo: À paramétrisé ClientId de l'app registration dans Azure AD -->
-            <Item Key="client_id">{{adClientId}}</Item>
-          </Metadata>
-          <CryptographicKeys>
-            <Key Id="client_secret"
-                 StorageReferenceId="B2C_1A_MSASecret" />
-          </CryptographicKeys>
-          <OutputClaims>
-            <OutputClaim ClaimTypeReferenceId="issuerUserId"
-                         PartnerClaimType="oid" />
-            <OutputClaim ClaimTypeReferenceId="givenName"
-                         PartnerClaimType="given_name" />
-            <OutputClaim ClaimTypeReferenceId="surName"
-                         PartnerClaimType="family_name" />
-            <OutputClaim ClaimTypeReferenceId="displayName"
-                         PartnerClaimType="name" />
-            <OutputClaim ClaimTypeReferenceId="authenticationSource"
-                         DefaultValue="socialIdpAuthentication" />
-            <OutputClaim ClaimTypeReferenceId="identityProvider"
-                         PartnerClaimType="iss" />
-            <OutputClaim ClaimTypeReferenceId="email" />
-          </OutputClaims>
-          <OutputClaimsTransformations>
-            <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName" />
-            <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName" />
-            <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId" />
-            <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId" />
-          </OutputClaimsTransformations>
-          <UseTechnicalProfileForSessionManagement ReferenceId="SM-SocialLogin" />
-        </TechnicalProfile>
-      </TechnicalProfiles>
-    </ClaimsProvider>
+    <!-- If you want to add Rest Validation uncomment these steps and change the orchestration step number bellow
+             also uncomment the orchestration steps in the SignIn file
     <ClaimsProvider>
       <DisplayName>Rest API</DisplayName>
       <TechnicalProfiles>
@@ -110,6 +60,7 @@
         </TechnicalProfile>
       </TechnicalProfiles>
     </ClaimsProvider>
+    -->
   </ClaimsProviders>
   <SubJourneys>
     <SubJourney Id="PasswordReset" Type="Call">

@@ -484,7 +484,6 @@
           <InputClaim ClaimTypeReferenceId="email" TransformationClaimType="personalizations.0.dynamic_template_data.email" />
         </InputClaims>
         <InputParameters>
-          <!-- Todo: Paramétriser le tempalte id de vérification de courriel de Sendgrid -->
           <InputParameter Id="template_id" DataType="string" Value="{{sengridVerifyTemplateId}}"/>
           <InputParameter Id="from.email" DataType="string" Value="{{sendGridFromEmail}}"/>
           <!-- Update with a subject line appropriate for your organization. -->
@@ -577,7 +576,6 @@
         </Metadata>
       </ContentDefinition>
       <ContentDefinition Id="api.localaccountsignin">
-        <!-- Todo : Paramétriser l'adresse -->
         <LoadUri>https://{{blobStorageName}}.blob.core.windows.net/templates/templates/loginPage.html</LoadUri>
         <RecoveryUri>~/common/default_page_error.html</RecoveryUri>
         <DataUri>urn:com:microsoft:aad:b2c:elements:contract:selfasserted:2.1.7</DataUri>

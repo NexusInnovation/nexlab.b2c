@@ -25,7 +25,7 @@
                             TechnicalProfileReferenceId="SelfAsserted-LocalAccountSignin-Email" />
           </ClaimsExchanges>
         </OrchestrationStep>
-        <!-- Cette étape ajoute "IsForgotPassword" = true dans les claims. -->
+        <!-- This step adds "IsForgotPassword" = true in the claims if the user chooses the exchange. -->
         <OrchestrationStep Order="2"
                            Type="ClaimsExchange">
           <Preconditions>
@@ -40,8 +40,7 @@
                             TechnicalProfileReferenceId="ForgotPassword" />
           </ClaimsExchanges>
         </OrchestrationStep>
-        <!-- S'il n'y a pas le claim "IsForgotPassword", on skip ! -->
-        <!-- Fait le reset password -->
+        <!-- If "IsForgotPassword" is false, we skip this step ! -->
         <OrchestrationStep Order="3"
                            Type="InvokeSubJourney">
           <Preconditions>
@@ -61,12 +60,15 @@
                             TechnicalProfileReferenceId="AAD-UserReadUsingObjectId" />
           </ClaimsExchanges>
         </OrchestrationStep>
+        <!-- If you want to add Rest Validation uncomment these steps and change the orchestration step number bellow
+             also uncomment the claims provider in the TrustFrameworkExtensions file
         <OrchestrationStep Order="5" Type="ClaimsExchange">
           <ClaimsExchanges>
             <ClaimsExchange Id="CallRest"
                             TechnicalProfileReferenceId="Rest-Enhance-Claims" />
           </ClaimsExchanges>
         </OrchestrationStep>
+        <! If not found is present in the claims, an error page will be displayed >
         <OrchestrationStep Order="6"
                            Type="ClaimsExchange">
           <Preconditions>
@@ -82,7 +84,9 @@
                             TechnicalProfileReferenceId="SelfAsserted-Unsolicited" />
           </ClaimsExchanges>
         </OrchestrationStep>
-        <OrchestrationStep Order="7"
+        -->
+
+        <OrchestrationStep Order="5"
                             Type="SendClaims"
                             CpimIssuerTechnicalProfileReferenceId="JwtIssuer" />
       </OrchestrationSteps>
@@ -107,7 +111,10 @@
         <OutputClaim ClaimTypeReferenceId="tenantId"
                      AlwaysUseDefaultValue="true"
                      DefaultValue="{Policy:TenantObjectId}" />
-        <OutputClaim ClaimTypeReferenceId="contactId" />
+        <!-- If you add a rest call, you can add extra claims your api sends and that you want to output
+          For example : 
+          <OutputClaim ClaimTypeReferenceId="userId" />
+        -->                     
         <OutputClaim ClaimTypeReferenceId="displayName" />
       </OutputClaims>
       <SubjectNamingInfo ClaimType="sub" />

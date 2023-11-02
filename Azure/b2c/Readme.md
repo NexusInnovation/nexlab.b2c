@@ -1,6 +1,6 @@
 # Setting Up a New B2C Environment
 
-1. Follow the instructions in [Microsoft's Custom Policies documentation](https://learn.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-user-flows?pivots=b2c-custom-policy) to add the app registrations `ProxyIdentityExperienceFramework` & `Identity Experience Framework`, along with the necessary keys.
+1. Follow the instructions in [Microsoft's Custom Policies documentation](https://learn.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-user-flows?pivots=b2c-custom-policy) to add the app registrations `ProxyIdentityExperienceFramework` & `Identity Experience Framework`, along with the necessary Policy keys (`TokenSigninKeyContainer` & `TokenEncryptionKeyContainer`).
     * **Note**: Make sure to keep the client IDs from the created app registrations as they will be used in the configuration.
 
 1. In Azure B2C's "Company Branding" page, edit the default branding. Add the "Background Image for the Login Page" located at `/Branding/white-background.png` and add the "Banner Logo" found in `/Branding/banner-logo.png`. Save as such.
@@ -12,9 +12,15 @@
         BackgroundColor: #EAF2FB;
         ```
 
-1. For email sending via Sendgrid (for the template), a `SendGridSecret` should be added to the policy keys from Sendgrid's API key. For "Key Usage," choose "Signature".
+1. For email sending via Sendgrid (for the template), a policy key needs to be added. `SendGridSecret`. Go in `Identiy Experience Framework > Policy Keys`. Add a key, selecte "Manual" with the name `SendGridSecret` and the value should be your Sendgrid's API key. For "Key Usage," choose "Signature".
 
-## Deploy manually the custom policies
+1. For the signup validation, a signed token is created before a registration link is sent to your user. This token contains the user's email authorized for registration. Create the symetric key and add it to the B2C policy keys under the name `IdTokenHintKey` (`B2C_1A_` will be prefixed) with Key Usage `Encryptiion` Refer to [Microsoft's documentation](https://learn.microsoft.com/en-us/azure/active-directory-b2c/id-token-hint#issue-a-token-with-symmetric-keys)
+    
+    **Note**: Make sure to keep the secret as it will be used for your API configuration.
+    
+    If you are using `.NET`, [an exemple code is available on Azure B2C's Github](https://github.com/azure-ad-b2c/id_token_hint/tree/master/dotnet_core_symmetric_key) for the backend implementation of the registration link. 
+
+## Deploy manually the custom policies for testing purposes
 When updating the custom policies it can be quite usefull to deploy manually the policies. 
 In that case you can follow the following steps after making the desired changes.
 
@@ -22,14 +28,14 @@ In that case you can follow the following steps after making the desired changes
     ```ps
     .\replaceParams.ps1 -TenantName azureB2CTenantName -ProxyIdentityFrameworkId proxyIdentityFrameworkId -IdentityExperienceFrameworkId idenityExperienceFramework -BlobStorageName blobstorageName -SendGridVerifyEmailTemplateId templateId -SendGridFromEmail fromEmail ...#otherOptionnalParameters 
     ```
+1. In your AzureB2C, under `Identity Experience Framework > Custom Policies`, upload the custom policies from the `Azure/b2c/PoliciesToUpload` folder in the following order: 
+    
+    1. TrustFrameworkBase
+    1. TrustFrameworkLocalization
+    1. TrustFrameworkExtensions
+    1. SignUpOnInvitation & SignIn 
 
-## Optionnal 
-
-### Add Signup Validation
-A signed token can be created before the registration of a user to verify the user has access to the application.
-When entering the signup page his email will be extracted from the authorized token and will be in readonly. 
-1. To setup, create this symmetric key and add it to the B2C policy keys under the name `IdTokenHintKey` (`B2C_1A_` will be prefixed). Refer to [Microsoft's documentation](https://learn.microsoft.com/en-us/azure/active-directory-b2c/id-token-hint#issue-a-token-with-symmetric-keys) if needed.
-    * **Note**: Make sure to keep the secret as it will be used for API configuration.
+## Optionnal
 
 ### Add Rest Login Verification
 
