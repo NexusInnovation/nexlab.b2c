@@ -23,8 +23,8 @@ variables:
 
   - ${{ if eq(variables['BUILD_ENV'], '') }}:
       - name: BUILD_ENV
-        value: "stg"
-      - group: B2CClient-Staging
+        value: "dev"
+      - group: B2CClient-Dev
 
 stages:
   - template: "/Azure/Pipelines/b2c-environment/build-stage.yml"
@@ -33,8 +33,8 @@ stages:
 
   - template: "/Azure/Pipelines/b2c-environment/deploy-stage.yml"
     parameters:
-      name: "B2CClientB2CDeployStaging"
-      displayName: "B2C Client B2C Staging"
+      name: "B2CClientB2CDeployDev"
+      displayName: "B2C Client B2C Dev"
       artifactName: ${{ variables.artifactName }}
       environment: ${{ variables.BUILD_ENV }}
       condition: "true"

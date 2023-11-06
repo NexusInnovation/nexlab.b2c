@@ -23,8 +23,8 @@ $lookupTable = @{
     '{{apiUrl}}' = $RestApiUrl
 }
 
-$pathToPolicies = './Policies'
-$destinationPolicyPath = './PoliciesToUpload' 
+$pathToPolicies = '../Policies'
+$destinationPolicyPath = '../PoliciesToUpload' 
 $customPolicies = @(
     '/TrustFrameworkBase.xml',
     '/TrustFrameworkExtensions.xml',

@@ -3,13 +3,13 @@
 1. Follow the instructions in [Microsoft's Custom Policies documentation](https://learn.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-user-flows?pivots=b2c-custom-policy) to add the app registrations `ProxyIdentityExperienceFramework` & `Identity Experience Framework`, along with the necessary Policy keys (`TokenSigninKeyContainer` & `TokenEncryptionKeyContainer`).
     * **Note**: Make sure to keep the client IDs from the created app registrations as they will be used in the configuration.
 
-1. In Azure B2C's "Company Branding" page, edit the default branding. Add the "Background Image for the Login Page" located at `/Branding/white-background.png` and add the "Banner Logo" found in `/Branding/banner-logo.png`. Save as such.
+1. In Azure B2C's "Company Branding" page, edit the default branding. Add the "Background Image for the Login Page" located at `/Branding/company-background.png` and add the "Banner Logo" found in `/Branding/banner-logo.png`. Save as such.
     * **Important note**: the logo's size can be up to 10 kpb.
     + The current HTML Pages in `/html` have been taken extracted from [Microsoft Azure Blue template](https://learn.microsoft.com/en-us/azure/active-directory-b2c/customize-ui-with-html?pivots=b2c-custom-policy). They define colors for buttons and background that should be updated with your own using the `Find And Replace` function in your favorite code editor.
         ```js
-        ActiveColor:  rgb(0, 91, 212)
-        HoverColor: rgb(0, 55, 101) 
-        BackgroundColor: #EAF2FB;
+        ActiveColor:  #276bfb
+        HoverColor: #ff4e1f
+        BackgroundColor: #276bfa
         ```
 
 1. For email sending via Sendgrid (for the template), a policy key needs to be added. `SendGridSecret`. Go in `Identiy Experience Framework > Policy Keys`. Add a key, selecte "Manual" with the name `SendGridSecret` and the value should be your Sendgrid's API key. For "Key Usage," choose "Signature".

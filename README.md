@@ -36,17 +36,21 @@ The goal of this project is to facilitate the development and integration for th
     | B2CTenantLocation | Location where B2C will store consumer data. | 'United States', 'Europe', etc. [For more information](https://learn.microsoft.com/en-us/azure/active-directory-b2c/data-residency)
     | B2CTenantCountryCode | Must match the B2CTenant Location. [For more information](https://learn.microsoft.com/en-us/azure/active-directory-b2c/data-residency) | 'CA', 'US' for example will be stored in 'United States'
     |
-- Create the environments
+1. Create the environments
 
     In the `Pipeline > Environment`` sections of Azure Devops, two environments must be added. The names of which can be updated in the azure-pipelines file.
     The required environment by default are : `stg` & `prod`
 
+1. After creating the infra, you will have to give "Storage Blob Data Contributor" access to the Service Principal over the blob storage to deploy html files when they are changes.
+
 
 ## What's not included
-- Automatisation of AppRegistration and Policy key creation
-- Automatisation of Sendgrid Template creation
+- Automatisation of B2C Tenant, AppRegistrations and Policy keys creation
+- Automatisation of Sendgrid environment and Email Template creation
 - Id token BE Generation Implementation
 - Rest API Call BE Implementation
 
 ## How to take it further
 - Internationnalisation of Html Pages (to support multiple languages)
+- Deployment of B2C tenant through Powershell script.
+- Improving secret security by using Key Vault in the Library
