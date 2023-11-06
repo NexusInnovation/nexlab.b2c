@@ -46,14 +46,11 @@ stages:
                     scriptLocation: inlineScript
                     inlineScript: |
                       az --version
-                      $directoryExists = $true
                       $rgExists = az group exists -n "rg-$(ApplicationName)-$(environment)"
                       az deployment sub create --location $(Location) `
                         --template-file "$(Pipeline.Workspace)\${{ parameters.artifactName }}\bicep\main.bicep" `
                         --parameters environment=$(environment) `
                         applicationName=$(ApplicationName) `
+                        b2cTenantName=$(TenantName) `
                         location=$(Location) `
-                        tenantLocation=$(B2CTenantLocation) `
-                        tenantCountryCode=$(B2CTenantCountryCode) `
-                        resourceGroupExists=$rgExists `
-                        b2cTenantExists=$directoryExists
+                        resourceGroupExists=$rgExists 

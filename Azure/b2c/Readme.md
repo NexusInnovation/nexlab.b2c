@@ -1,7 +1,6 @@
 # Setting Up a New B2C Environment
 
 ## Manual configuration needed in the B2C tenant
-After these steps you will be able to configure the azure pipeline in `/Azure/Pipelines/b2c-policies/azure-pipelines.yml` to automatically deploy your Azure B2C custom policies.
 1. ### Create the required app registrations.
     1. For the custom policies, follow the instructions in   [Microsoft's Custom Policies documentation](https://learn.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-user-flows?pivots=b2c-custom-policy) to add the app registrations `ProxyIdentityExperienceFramework` & `Identity Experience Framework`, along with the necessary Policy keys (`TokenSigninKeyContainer` & `TokenEncryptionKeyContainer`).
     
@@ -60,7 +59,20 @@ Follow [Microsoft's Register management application](https://learn.microsoft.com
     | SendGridFromEmail | A email address you have configured in Sendgrid for sending emails. Used for sending the One time password email for the forgot password. | 
     | SendGridVerifyEmailTemplateId | The sendgrid template ID for the forgot pawword email | 
 
-## Deploy manually the custom policies for testing purposes
+## Optionnal
+
+### Add Rest Login Verification
+
+For sign-in, a REST call can be sent to your API to verify he is a user of your application and enhance the claims on B2C sends to your client application.
+
+To setup,
+1. Uncomment the `Rest` Claims provider and Add the `Rest-Enhance-Claims` orchestration step.
+1. To set it up, manually generate a secret and add it to a policy key named `RestApiPassword` in Azure B2C. Also add a username to a policy key named `RestApiUsername`. Keep both the secret and the username for API configuration.
+
+
+## Testing the Policies
+
+### Deploy manually the custom policies for testing purposes
 When updating the custom policies it can be quite usefull to deploy manually the policies. 
 In that case you can follow the following steps after making the desired changes.
 
@@ -74,13 +86,3 @@ In that case you can follow the following steps after making the desired changes
     1. TrustFrameworkLocalization
     1. TrustFrameworkExtensions
     1. SignUpOnInvitation & SignIn 
-
-## Optionnal
-
-### Add Rest Login Verification
-
-For sign-in, a REST call can be sent to your API to verify he is a user of your application and enhance the claims on B2C sends to your client application.
-
-To setup,
-1. Uncomment the `Rest` Claims provider and Add the `Rest-Enhance-Claims` orchestration step.
-1. To set it up, manually generate a secret and add it to a policy key named `RestApiPassword` in Azure B2C. Also add a username to a policy key named `RestApiUsername`. Keep both the secret and the username for API configuration.

@@ -7,7 +7,15 @@ param environment string
 param location string
 param resourceGroupExists bool
 param applicationName string
-param b2cTenantExists bool = true
+param b2cTenantName string
+
+targetScope = 'subscription'
+
+resource createResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = if (!resourceGroupExists) {
+  name: 'rg-${applicationName}-${environment}'
+  location: location
+}
+/* This Will work locally but there's an authorisation issue when using it in Azure Devops
 @allowed([
   'Global'
   'United States'
@@ -19,20 +27,6 @@ param b2cTenantExists bool = true
 param tenantLocation string = 'United States'
 // For more information on possible tenantCountryCode visit: https://learn.microsoft.com/en-us/azure/active-directory-b2c/data-residency
 param tenantCountryCode string = 'CA'
-
-// For any resource you create, please follow the recommended abbreviations for Azure
-// https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations
-
-targetScope = 'subscription'
-
-resource createResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = if (!resourceGroupExists) {
-  name: 'rg-${applicationName}-${environment}'
-  location: location
-}
-
-#disable-next-line BCP334 // Unless the application name AND environment are empty strings, this will not be a problem. And if happens, then the problem is elsewhere
-var b2cTenantName = '${replace(applicationName, '-', '')}${environment}'
-
 /*
 module azureB2cDirectory 'modules/b2cdirectory.bicep' = if (!b2cTenantExists) {
   scope: createResourceGroup

@@ -1,6 +1,8 @@
 # Use this script locally
 
 You can setup an environment on your own Azure Subscription to test features.
+When running locally you can also deploy the B2C tenant (just uncomment the b2c deployment in the main.bicep).
+On Azure Devops, it is, for the moment, [impossible to deploy with a Service Principal](https://stackoverflow.com/a/68458174).
 
 ## Requirements
 - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
