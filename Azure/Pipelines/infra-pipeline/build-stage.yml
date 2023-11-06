@@ -1,0 +1,25 @@
+parameters:
+  - name: artifactName
+    type: string
+
+stages:
+  - stage: BuildPackage
+    displayName: "Build and Run tests"
+    jobs:
+      - job: CopyFiles
+        pool: 
+          vmImage: "windows-latest"
+        displayName: "Copy files"
+        steps:
+          - checkout: self
+          
+          - task: CopyFiles@2
+            displayName: "Copy Bicep File"
+            inputs:
+              sourceFolder: "$(Build.SourcesDirectory)/Azure/Infra-as-code"
+              Contents: "**/*"
+              targetFolder: "$(Build.ArtifactStagingDirectory)/bicep"
+
+          - publish: $(Build.ArtifactStagingDirectory)
+            artifact: ${{ parameters.artifactName }}
+            displayName: "Publish Artifacts"

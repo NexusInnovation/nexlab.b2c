@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TrustFrameworkPolicy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                      xmlns="http://schemas.microsoft.com/online/cpim/schemas/2013/06"
+                      PolicySchemaVersion="0.3.0.0"
+                      TenantId="{{tenantName}}.onmicrosoft.com"
+                      PolicyId="B2C_1A_SignIn"
+                      PublicPolicyUri="http://{{tenantName}}.onmicrosoft.com/B2C_1A_SignIn">
+  <BasePolicy>
+    <TenantId>{{tenantName}}.onmicrosoft.com</TenantId>
+    <PolicyId>B2C_1A_TrustFrameworkExtensions</PolicyId>
+  </BasePolicy>
+  <UserJourneys>
+    <UserJourney Id="SignIn">
+      <OrchestrationSteps>
+        <OrchestrationStep Order="1"
+                            Type="CombinedSignInAndSignUp"
+                            ContentDefinitionReferenceId="api.signuporsignin">
+          <ClaimsProviderSelections>
+            <ClaimsProviderSelection ValidationClaimsExchangeId="LocalAccountSigninEmailExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="ForgotPasswordExchange" />
+          </ClaimsProviderSelections>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="LocalAccountSigninEmailExchange"
+                            TechnicalProfileReferenceId="SelfAsserted-LocalAccountSignin-Email" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        <!-- This step adds "IsForgotPassword" = true in the claims if the user chooses the exchange. -->
+        <OrchestrationStep Order="2"
+                           Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist"
+                          ExecuteActionsIf="true">
+              <Value>objectId</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="ForgotPasswordExchange"
+                            TechnicalProfileReferenceId="ForgotPassword" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        <!-- If "IsForgotPassword" is false, we skip this step ! -->
+        <OrchestrationStep Order="3"
+                           Type="InvokeSubJourney">
+          <Preconditions>
+            <Precondition Type="ClaimsExist"
+                          ExecuteActionsIf="false">
+              <Value>isForgotPassword</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <JourneyList>
+            <Candidate SubJourneyReferenceId="PasswordReset" />
+          </JourneyList>
+        </OrchestrationStep>
+        <OrchestrationStep Order="4" Type="ClaimsExchange">
+          <ClaimsExchanges>
+            <ClaimsExchange Id="AADUserReadWithObjectId"
+                            TechnicalProfileReferenceId="AAD-UserReadUsingObjectId" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        <!-- If you want to add Rest Validation uncomment these steps and change the orchestration step number bellow
+             also uncomment the claims provider in the TrustFrameworkExtensions file
+        <OrchestrationStep Order="5" Type="ClaimsExchange">
+          <ClaimsExchanges>
+            <ClaimsExchange Id="CallRest"
+                            TechnicalProfileReferenceId="Rest-Enhance-Claims" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        <! If not found is present in the claims, an error page will be displayed >
+        <OrchestrationStep Order="6"
+                           Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimEquals"
+                          ExecuteActionsIf="true">
+              <Value>notFound</Value>
+              <Value>false</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="SelfAsserted-Unsolicited"
+                            TechnicalProfileReferenceId="SelfAsserted-Unsolicited" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        -->
+
+        <OrchestrationStep Order="5"
+                            Type="SendClaims"
+                            CpimIssuerTechnicalProfileReferenceId="JwtIssuer" />
+      </OrchestrationSteps>
+      <ClientDefinition ReferenceId="DefaultWeb" />
+    </UserJourney>
+  </UserJourneys>
+  <RelyingParty>
+    <DefaultUserJourney ReferenceId="SignIn" />
+    <UserJourneyBehaviors>
+      <SingleSignOn Scope="Tenant"
+                    KeepAliveInDays="14" />
+      <SessionExpiryType>Rolling</SessionExpiryType>
+      <SessionExpiryInSeconds>86400</SessionExpiryInSeconds>
+    </UserJourneyBehaviors>
+    <TechnicalProfile Id="PolicyProfile">
+      <DisplayName>PolicyProfile</DisplayName>
+      <Protocol Name="OpenIdConnect" />
+      <OutputClaims>
+        <OutputClaim ClaimTypeReferenceId="email" />
+        <OutputClaim ClaimTypeReferenceId="objectId"
+                     PartnerClaimType="sub" />
+        <OutputClaim ClaimTypeReferenceId="tenantId"
+                     AlwaysUseDefaultValue="true"
+                     DefaultValue="{Policy:TenantObjectId}" />
+        <!-- If you add a rest call, you can add extra claims your api sends and that you want to output
+          For example : 
+          <OutputClaim ClaimTypeReferenceId="userId" />
+        -->                     
+        <OutputClaim ClaimTypeReferenceId="displayName" />
+      </OutputClaims>
+      <SubjectNamingInfo ClaimType="sub" />
+    </TechnicalProfile>
+  </RelyingParty>
+</TrustFrameworkPolicy>

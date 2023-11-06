@@ -1,0 +1,39 @@
+parameters:
+  - name: artifactName
+    type: string
+
+stages:
+  - stage: BuildPackage
+    displayName: "Build and Run tests"
+    jobs:
+      - job: CopyFiles
+        pool: 
+          vmImage: "windows-latest"
+        displayName: "Copy files"
+        steps:
+          - checkout: self
+
+          - task: CopyFiles@2
+            displayName: "Copy B2C Html templates"
+            inputs:
+              sourceFolder: "$(Build.SourcesDirectory)/Azure/b2c/html"
+              Contents: "**/*"
+              targetFolder: "$(Build.ArtifactStagingDirectory)/templates"
+
+          - task: CopyFiles@2
+            displayName: "Copy Custom Policies File"
+            inputs:
+              sourceFolder: "$(Build.SourcesDirectory)/Azure/b2c/Policies"
+              Contents: "**/*"
+              targetFolder: "$(Build.ArtifactStagingDirectory)/Policies"
+
+          - task: CopyFiles@2
+            displayName: "Copy B2C Scripts"
+            inputs:
+              sourceFolder: "$(Build.SourcesDirectory)/Azure/b2c/scripts"
+              Contents: "**/*"
+              targetFolder: "$(Build.ArtifactStagingDirectory)/scripts"
+
+          - publish: $(Build.ArtifactStagingDirectory)
+            artifact: ${{ parameters.artifactName }}
+            displayName: "Publish Artifacts"

@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TrustFrameworkPolicy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                      xmlns="http://schemas.microsoft.com/online/cpim/schemas/2013/06"
+                      PolicySchemaVersion="0.3.0.0"
+                      TenantId="{{tenantName}}.onmicrosoft.com"
+                      PolicyId="B2C_1A_TrustFrameworkExtensions"
+                      PublicPolicyUri="http://{{tenantName}}.onmicrosoft.com/B2C_1A_TrustFrameworkExtensions">
+  <BasePolicy>
+    <TenantId>{{tenantName}}.onmicrosoft.com</TenantId>
+    <PolicyId>B2C_1A_TrustFrameworkLocalization</PolicyId>
+  </BasePolicy>
+  <BuildingBlocks />
+  <ClaimsProviders>
+    <ClaimsProvider>
+      <DisplayName>Local Account SignIn</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="login-NonInteractive">
+          <Metadata>
+            <!-- Id généré pour les app registrations : https://learn.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-user-flows?pivots=b2c-custom-policy#register-the-identityexperienceframework-application -->
+            <Item Key="client_id">{{proxyIdentityExperienceFramework}}</Item>
+            <Item Key="IdTokenAudience">{{identityExperienceFramework}}</Item>
+          </Metadata>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="client_id"
+                        DefaultValue="{{proxyIdentityExperienceFramework}}" />
+            <InputClaim ClaimTypeReferenceId="resource_id"
+                        PartnerClaimType="resource"
+                        DefaultValue="{{identityExperienceFramework}}" />
+          </InputClaims>
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <!-- If you want to add Rest Validation uncomment these steps and change the orchestration step number bellow
+             also uncomment the orchestration steps in the SignIn file
+    <ClaimsProvider>
+      <DisplayName>Rest API</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="Rest-Enhance-Claims">
+          <DisplayName>API Sign In</DisplayName>
+           <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="ServiceUrl">{{apiUrl}}</Item>
+            <Item Key="AuthenticationType">Basic</Item> 
+            <Item Key="SendClaimsIn">QueryString</Item>
+          </Metadata>
+          <CryptographicKeys>
+            <Key Id="BasicAuthenticationUsername" StorageReferenceId="B2C_1A_RestApiUsername" />
+            <Key Id="BasicAuthenticationPassword" StorageReferenceId="B2C_1A_RestApiPassword" />
+          </CryptographicKeys>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="email" />
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="contactId" />
+            <OutputClaim ClaimTypeReferenceId="errorMessage" />
+            <OutputClaim ClaimTypeReferenceId="notFound" />
+            <OutputClaim ClaimTypeReferenceId="displayName" />
+          </OutputClaims>
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    -->
+  </ClaimsProviders>
+  <SubJourneys>
+    <SubJourney Id="PasswordReset" Type="Call">
+      <OrchestrationSteps>
+        <!-- Validate user's email address. -->
+        <OrchestrationStep Order="1" Type="ClaimsExchange">
+          <ClaimsExchanges>
+            <ClaimsExchange Id="PasswordResetUsingEmailAddressExchange" TechnicalProfileReferenceId="LocalAccountDiscoveryUsingEmailAddress" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        <!-- Collect and persist a new password. -->
+        <OrchestrationStep Order="2" Type="ClaimsExchange">
+          <ClaimsExchanges>
+            <ClaimsExchange Id="NewCredentials" TechnicalProfileReferenceId="LocalAccountWritePasswordUsingObjectId" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+      </OrchestrationSteps>
+    </SubJourney>
+  </SubJourneys>
+</TrustFrameworkPolicy>
