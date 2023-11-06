@@ -21,11 +21,18 @@ stages:
               targetFolder: "$(Build.ArtifactStagingDirectory)/templates"
 
           - task: CopyFiles@2
-            displayName: "Copy Bicep File"
+            displayName: "Copy Custom Policies File"
             inputs:
-              sourceFolder: "$(Build.SourcesDirectory)/Azure/Infra-as-code"
+              sourceFolder: "$(Build.SourcesDirectory)/Azure/b2c/policies"
               Contents: "**/*"
-              targetFolder: "$(Build.ArtifactStagingDirectory)/bicep"
+              targetFolder: "$(Build.ArtifactStagingDirectory)/policies"
+
+          - task: CopyFiles@2
+            displayName: "Copy B2C Scripts"
+            inputs:
+              sourceFolder: "$(Build.SourcesDirectory)/Azure/b2c/scripts"
+              Contents: "**/*"
+              targetFolder: "$(Build.ArtifactStagingDirectory)/scripts"
 
           - publish: $(Build.ArtifactStagingDirectory)
             artifact: ${{ parameters.artifactName }}

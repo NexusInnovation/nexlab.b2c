@@ -34,5 +34,4 @@ You can setup an environment on your own Azure Subscription to test features.
 1. Start the Deployment
     ```ps
     az deployment sub create --location canadacentral --template-file ./main.bicep --parameters environment=dev location=canadacentral resourceGroupExists=false applicationName=#giveitaname
-    ...otherParameters
     ```

@@ -27,22 +27,22 @@ variables:
       - group: B2CClient-Dev
 
 stages:
-  - template: "/Azure/Pipelines/b2c-environment/build-stage.yml"
+  - template: "/Azure/Pipelines/infra-pipeline/build-stage.yml"
     parameters:
       artifactName: ${{ variables.artifactName }}
 
-  - template: "/Azure/Pipelines/b2c-environment/deploy-stage.yml"
+  - template: "/Azure/Pipelines/infra-pipeline/deploy-stage.yml"
     parameters:
-      name: "B2CClientB2CDeployDev"
-      displayName: "B2C Client B2C Dev"
+      name: "B2CInfraDev"
+      displayName: "Create B2C Infra Dev"
       artifactName: ${{ variables.artifactName }}
       environment: ${{ variables.BUILD_ENV }}
-      condition: "true"
+      condition: "eq(variables['build.sourceBranch'], 'refs/heads/main')"
   
-  - template: "/Azure/Pipelines/b2c-environment/deploy-stage.yml"
+  - template: "/Azure/Pipelines/infra-pipeline/deploy-stage.yml"
     parameters:
-      name: "B2CClientB2CDeployProduction"
-      displayName: "B2C Client B2C Production"
+      name: "B2CInfraProduction"
+      displayName: "Create B2C Infra Production"
       artifactName: ${{ variables.artifactName }}
       environment: ${{ variables.BUILD_ENV }}
       condition: "startsWith(variables['build.sourceBranch'], 'refs/tags/')"

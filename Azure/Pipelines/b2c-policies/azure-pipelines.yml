@@ -1,0 +1,48 @@
+name: "$(SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)"
+
+trigger:
+  branches:
+    include:
+      - main
+  tags:
+    include:
+      - b2c-*
+  paths:
+    include:
+      - Azure/b2c/*
+      - Azure/Pipelines/*
+
+variables:
+  - group: B2CClient-Common
+  - name: artifactName
+    value: "client"
+  - ${{ if and(eq(variables['BUILD_ENV'], ''), startsWith(variables['build.sourceBranch'], 'refs/tags/')) }}:
+      - name: BUILD_ENV
+        value: "prd"
+      - group: B2CClient-Prod
+
+  - ${{ if eq(variables['BUILD_ENV'], '') }}:
+      - name: BUILD_ENV
+        value: "dev"
+      - group: B2CClient-Dev
+
+stages:
+  - template: "/Azure/Pipelines/b2c-policies/build-stage.yml"
+    parameters:
+      artifactName: ${{ variables.artifactName }}
+
+  - template: "/Azure/Pipelines/b2c-policies/deploy-stage.yml"
+    parameters:
+      name: "B2CFilesDev"
+      displayName: "Deploy B2C Files Dev"
+      artifactName: ${{ variables.artifactName }}
+      environment: ${{ variables.BUILD_ENV }}
+      condition: "eq(variables['build.sourceBranch'], 'refs/heads/main')"
+  
+  - template: "/Azure/Pipelines/b2c-policies/deploy-stage.yml"
+    parameters:
+      name: "B2CFilesProduction"
+      displayName: "Deploy B2C Files Production"
+      artifactName: ${{ variables.artifactName }}
+      environment: ${{ variables.BUILD_ENV }}
+      condition: "startsWith(variables['build.sourceBranch'], 'refs/tags/')"

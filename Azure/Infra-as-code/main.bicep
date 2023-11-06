@@ -6,8 +6,8 @@
 param environment string
 param location string
 param resourceGroupExists bool
-param b2cTenantExists bool
 param applicationName string
+param b2cTenantExists bool = true
 @allowed([
   'Global'
   'United States'
@@ -33,6 +33,7 @@ resource createResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = i
 #disable-next-line BCP334 // Unless the application name AND environment are empty strings, this will not be a problem. And if happens, then the problem is elsewhere
 var b2cTenantName = '${replace(applicationName, '-', '')}${environment}'
 
+/*
 module azureB2cDirectory 'modules/b2cdirectory.bicep' = if (!b2cTenantExists) {
   scope: createResourceGroup
   name: 'azureB2CTenantDeployment'
@@ -44,6 +45,7 @@ module azureB2cDirectory 'modules/b2cdirectory.bicep' = if (!b2cTenantExists) {
     environment: environment
   }
 }
+*/
 // This will host the files to update the default b2c html
 module storageAccount 'modules/storageAccount.bicep' = {
   scope: createResourceGroup
