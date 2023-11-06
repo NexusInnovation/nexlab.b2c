@@ -18,22 +18,22 @@ stages:
     variables:
       - group: B2CClient-Common
       - ${{ if eq(parameters.environment, 'prd') }}:
-        - group: B2CClient-Prod
+          - group: B2CClient-Prod
       - ${{ if eq(parameters.environment, 'stg') }}:
         - group: B2CClient-Staging
       - ${{ if eq(parameters.environment, 'dev') }}:
         - group: B2CClient-Dev
       - name: environment
-        value: "${{ parameters.environment }}"
+        value: '${{ parameters.environment }}'
       - name: b2cTemplatePath
-        value: "$(Pipeline.Workspace)/${{ parameters.artifactName }}/templates"
+        value: '$(Pipeline.Workspace)/${{ parameters.artifactName }}/templates'
 
     jobs:
       - deployment: DeployStorageAccount
-        displayName: "Deploy Storage Account ${{ parameters.environment }}"
+        displayName: 'Deploy Storage Account ${{ parameters.environment }}'
         environment: ${{ parameters.environment }}
         pool:
-          vmImage: "windows-latest"
+          vmImage: 'windows-latest'
         strategy:
           runOnce:
             deploy:
@@ -41,11 +41,11 @@ stages:
                 - task: AzureFileCopy@5
                   inputs:
                     SourcePath: $(b2cTemplatePath)
-                    azureSubscription:  $(ServicePrincipalName)
-                    Destination: "AzureBlob"
-                    storage: "$(ApplicationName)$(environment)st"
-                    ContainerName: "templates"
+                    azureSubscription: $(ServicePrincipalName)
+                    Destination: 'AzureBlob'
+                    storage: '$(applicationName)$(environment)st'
+                    ContainerName: 'templates'
                     resourceGroup: $(resourceGroupName)
                     AdditionalArgumentsForBlobCopy: |
                       --overwrite=true `
-                      --recursive=true 
+                      --recursive=true
