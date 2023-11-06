@@ -57,15 +57,3 @@ stages:
                         tenantCountryCode=$(B2CTenantCountryCode) `
                         resourceGroupExists=$rgExists `
                         b2cTenantExists=$directoryExists
-
-                - task: AzureFileCopy@5
-                  inputs:
-                    SourcePath: $(b2cTemplatePath)
-                    azureSubscription: $(ServicePrincipalName)
-                    Destination: 'AzureBlob'
-                    storage: '$(applicationName)$(environment)st'
-                    ContainerName: 'templates'
-                    resourceGroup: $(resourceGroupName)
-                    AdditionalArgumentsForBlobCopy: |
-                      --overwrite=true `
-                      --recursive=true

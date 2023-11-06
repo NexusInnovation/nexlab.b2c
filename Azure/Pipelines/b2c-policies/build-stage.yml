@@ -23,9 +23,9 @@ stages:
           - task: CopyFiles@2
             displayName: "Copy Custom Policies File"
             inputs:
-              sourceFolder: "$(Build.SourcesDirectory)/Azure/b2c/policies"
+              sourceFolder: "$(Build.SourcesDirectory)/Azure/b2c/Policies"
               Contents: "**/*"
-              targetFolder: "$(Build.ArtifactStagingDirectory)/policies"
+              targetFolder: "$(Build.ArtifactStagingDirectory)/Policies"
 
           - task: CopyFiles@2
             displayName: "Copy B2C Scripts"

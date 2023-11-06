@@ -41,7 +41,9 @@ The goal of this project is to facilitate the development and integration for th
     In the `Pipeline > Environment`` sections of Azure Devops, two environments must be added. The names of which can be updated in the azure-pipelines file.
     The required environment by default are : `stg` & `prod`
 
-1. After creating the infra, you will have to give "Storage Blob Data Contributor" access to the Service Principal over the blob storage to deploy html files when they are changes.
+1. After deploying the infra, you will have to give "Storage Blob Data Contributor" access to the Service Principal over the blob storage to deploy html files when they are changes.
+
+1. 
 
 
 ## What's not included

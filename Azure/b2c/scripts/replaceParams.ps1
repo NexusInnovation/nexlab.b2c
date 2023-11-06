@@ -1,13 +1,15 @@
 param
 (
+  [parameter(Mandatory = $true)] [String] $PolicyFilePath,
+  [parameter(Mandatory = $true)] [String] $DestinationFilePath,
   [parameter(Mandatory = $true)] [String] $TenantName,
   [parameter(Mandatory = $true)] [String] $ProxyIdentityFrameworkId,
   [parameter(Mandatory = $true)] [String] $IdentityExperienceFrameworkId,
   [parameter(Mandatory = $true)] [String] $BlobStorageName,
   [parameter(Mandatory = $true)] [String] $SendGridVerifyEmailTemplateId,
   [parameter(Mandatory = $true)] [String] $SendGridFromEmail,
-  [parameter(Mandatory = $false)] [String] $TenantId,
   [parameter(Mandatory = $false)] [String] $TokenIssuerId,
+  [parameter(Mandatory = $false)] [String] $TenantId,
   [parameter(Mandatory = $false)] [String] $RestApiUrl
 )
 
@@ -23,8 +25,8 @@ $lookupTable = @{
     '{{apiUrl}}' = $RestApiUrl
 }
 
-$pathToPolicies = '../Policies'
-$destinationPolicyPath = '../PoliciesToUpload' 
+$pathToPolicies = $PolicyFilePath
+$destinationPolicyPath = $DestinationFilePath
 $customPolicies = @(
     '/TrustFrameworkBase.xml',
     '/TrustFrameworkExtensions.xml',

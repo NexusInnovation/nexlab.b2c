@@ -1,6 +1,7 @@
 # Script adapted from Microsoft's documentation : https://learn.microsoft.com/en-us/azure/active-directory-b2c/deploy-custom-policies-devops#configure-an-azure-repo
 param(
     [Parameter(Mandatory = $true)][string]$ClientID,
+    [Parameter(Mandatory = $true)][string]$PolicyFilePath,
     [Parameter(Mandatory = $true)][string]$ClientSecret,
     [Parameter(Mandatory = $true)][string]$TenantId
 )
@@ -15,7 +16,7 @@ try {
     $headers.Add("Content-Type", 'application/xml')
     $headers.Add("Authorization", 'Bearer ' + $token)
 
-    $pathToPolicies = '../PoliciesToUpload'
+    $pathToPolicies = $PolicyFilePath
     $customPolicies = @(
         '/TrustFrameworkBase.xml',
         '/TrustFrameworkExtensions.xml',

@@ -59,6 +59,8 @@ stages:
                     scriptType: filePath
                     scriptPath: '$(Pipeline.Workspace)/${{parameters.artifactName}}/scripts/replaceParams.ps1'
                     scriptArguments: > 
+                      -PolicyFilePath '$(Pipeline.Workspace)/${{parameters.artifactName}}/Policies'
+                      -DestinationFilePath '$(Pipeline.Workspace)/${{parameters.artifactName}}/PoliciesToUpload'
                       -TenantName $(TenantName)
                       -TenantId $(TenantId)
                       -ProxyIdentityFrameworkId $(ProxyIdentityFrameworkId)
@@ -67,16 +69,16 @@ stages:
                       -SendGridVerifyEmailTemplateId $(SendGridVerifyEmailTemplateId)
                       -SendGridFromEmail $(SendGridFromEmail)
                       -TokenIssuerId $(TokenIssuerId)
-                      -RestApiUrl $(RestApiUrl)
                 - task: AzurePowerShell@5
-                  displayName: 'Deploy Polciies'
+                  displayName: 'Deploy Polcies'
                   inputs:
                     azureSubscription: $(ServicePrincipalName)
                     pwsh: true
                     azurePowerShellVersion: LatestVersion
                     scriptType: filePath
                     scriptPath: '$(Pipeline.Workspace)/${{parameters.artifactName}}/scripts/deployPolicies.ps1'
-                    scriptArguments: > 
+                    scriptArguments: >
+                      -PolicyFilePath '$(Pipeline.Workspace)/${{parameters.artifactName}}/PoliciesToUpload' 
                       -ClientId $(DeploymentClientId)
                       -ClientSecret $(DeploymentClientSecret)
                       -TenantId $(TenantId)
