@@ -1,63 +1,59 @@
-## Foreword
-For our clients, we are often asked to integrate an authentification system for their company's users. Being a company that integrates Azure cloud solutions, the most likely solution for that use case is Azure B2C.
+## Préface
+Pour nos clients, nous sommes souvent sollicités pour intégrer un système d’authentification pour les utilisateurs de leur entreprise. Étant une entreprise qui intègre des solutions cloud Azure, la solution la plus probable pour ce cas d’utilisation est Azure B2C.
 
-Azure B2C offers prebuilt _user flows_ that can quickly create sign in and signup page. However, these are limited in customazitation possibilities and in our history of integrating Azure B2C, we were often asked for features that extended the possibilities of _user flows_. Therefore we always had the need to implement _Custom Policies_. 
+Azure B2C offre des flux d’utilisateurs pré-construits qui peuvent rapidement créer une page de connexion et d’inscription. Cependant, ceux-ci sont limités en termes de possibilités de personnalisation et dans notre histoire d’intégration d’Azure B2C, on nous a souvent demandé des fonctionnalités qui étendaient les possibilités des flux d’utilisateurs. Nous avons donc toujours eu besoin de mettre en œuvre des politiques personnalisées.
 
-The goal of this project is to facilitate the development and integration of custom policies for a multi-tenant application.  
+Le but de ce projet est de faciliter le développement et l’intégration de politiques personnalisées pour une application multi-locataire.
 
-We have integrated in these policies the most common use cases we have been asked with Azure B2C, which are :
-- Customizing the Look and feel of Sign-In, Sign-Up and Forgot Password pages (using Html & Css)
-- Securing the signup page to limit the users who have access to it (using Id Tokens).
-- Send customized emails for Forgot Password to match the company's brand (using SendGrid).
-- Extending the claims of Azure B2C by calling a rest API during Sign-In.
+Nous avons intégré dans ces politiques les cas d’utilisation les plus courants que nous avons rencontrés avec Azure B2C, qui sont :
 
-## What's included
-- Separate Custom Policy for Signin and Signup
-    - Sign In policy with a Forgot Password page that sends a One Time Password via a Sengrid's template.
-    - Signup policy with Id Token validation to make sure the user was invited and can only signup with the email the invitation was sent to.
-- Custom html page to change the appearance and titles of sign-in, sign-up and forgot password pages. 
-- Azure Devops Pipelines to deploy in multiples environments:
-    - The required infrastructure (a Blob storage for B2C Html Pages)
-    - Azure B2C Custom Policies and html templates. 
+- Personnalisation de l’apparence et de la convivialité des pages de connexion, d’inscription et de mot de passe oublié (à l’aide de Html & Css)
+- Sécurisation de la page d’inscription pour limiter les utilisateurs qui y ont accès (à l’aide de jetons d’identification).
+- Envoi d’e-mails personnalisés pour le mot de passe oublié pour correspondre à la marque de l’entreprise (à l’aide de SendGrid).
+- Extension des claims d’Azure B2C en appelant une API REST lors de la connexion.
+
+*Il est important de noter que [Microsoft Entra ID for Customers](https://learn.microsoft.com/en-us/entra/external-id/customers/overview-customers-ciam) est présentemment en "Preview" et visera à remplacer Azure B2C prochainement.*
+
 ## Configuration 
-1. Create the service principal
+1. Créez le principal de service
     
-    In your Azure Devops project settigns a service principal must be configured for Azure Portal.
-1. Create the required Libraries
+    Dans les paramètres de votre projet Azure Devops, un principal de service doit être configuré pour Azure Portal.
+1. Créez les bibliothèques requises
     
-    In the `Pipeline > Library`` section, three libraries must be created. The names of which can be replaced in the pipeline files.
-    By default, the required libraries are : `B2CClient-Common`, `B2CClient-Staging` & `B2CClient-Prod`.
+    Dans la section `Pipeline > Library`, trois bibliothèques doivent être créées. Les noms de celles-ci peuvent être remplacés dans les fichiers de pipeline.
+    Par défaut, les bibliothèques requises sont : `B2CClient-Common`, `B2CClient-Staging` et `B2CClient-Prod`.
 
-    The library must contain the following variables
+    La bibliothèque doit contenir les variables suivantes
     
-    | Name | Description | Value example |
+    | Nom | Description | Exemple de valeur |
     | ----- | -----| -------|
-    | ServicePrincipalName | Value of the service principal created in step 1 or your existing Service Principal Name | B2CAzure
-    | Location | Location for the Azure storage account | canadacentral, eastus, etc
-    | ApplicationName | Name used for creating the different azure ressources. Will be suffixed with the environment and prefixed with ressource type | rg-{ApplicationName}-stg
+    | ServicePrincipalName | Valeur du principal de service créé à l'étape 1 ou nom de votre principal de service existant | B2CAzure
+    | Location | Emplacement pour le compte de stockage Azure | canadacentral, eastus, etc
+    | ApplicationName | Nom utilisé pour créer les différentes ressources Azure. Sera suffixé avec l'environnement et préfixé avec le type de ressource | rg-{ApplicationName}-stg
 
-1. Configure each Azure B2C tenant as described in the Readme file available in the repo at the following path: `Azure/b2c/Readme.md`.
-1. Create the environments
+1. Configurez chaque locataire Azure B2C comme décrit dans le fichier Readme disponible dans le référentiel à l'emplacement suivant : `Azure/b2c/Readme.md`.
+1. Créez les environnements
 
-    In the `Pipeline > Environment`` sections of Azure Devops, two environments must be added. The names of which can be updated in the azure-pipelines file.
-    The required environment by default are : `dev` & `prod`
+    Dans les sections `Pipeline > Environnement` d'Azure Devops, deux environnements doivent être ajoutés. Les noms de ceux-ci peuvent être mis à jour dans le fichier azure-pipelines.
+    Les environnements requis par défaut sont : `dev` et `prod`
 
-1. Create or integrate the Infra Pipeline.
+1. Créez ou intégrez le pipeline Infra.
    
-   Available at :  `Azure/Pipelines/infra-pipeline/azure-pipelines.yml`
-1. After deploying the infra, you will have to give "Storage Blob Data Contributor" access to the Service Principal over the blob storage to deploy html files when they are changes.
+   Disponible à :  `Azure/Pipelines/infra-pipeline/azure-pipelines.yml`
+1. Après le déploiement de l'infrastructure, vous devrez donner l'accès "Contributeur de données de stockage Blob" au principal de service sur le stockage de blobs pour déployer les fichiers html lorsqu'ils sont modifiés.
 
-1. Create the Policy Pipeline 
+1. Créez le pipeline de stratégie 
    
-   Available at :  `Azure/Pipelines/b2c-policies/azure-pipelines.yml`
+   Disponible à :  `Azure/Pipelines/b2c-policies/azure-pipelines.yml`
 
-## What's not included
-- Automatisation of B2C Tenant, AppRegistrations and Policy keys creation
-- Automatisation of Sendgrid environment and Email Template creation
-- Id token BE Generation Implementation
-- Rest API Call BE Implementation
+## Ce qui n'est pas inclus
+- Automatisation de la création de locataires B2C, d'inscriptions d'applications et de clés de stratégie (Policy keys)
+- Automatisation de l'environnement Sendgrid et de la création de modèles de courrier électronique
+- Implémentation backend de la génération de jetons Id Token pour l'inscription. Voir l'[implémentation que Microsoft propose](https://github.com/azure-ad-b2c/id-token-builder).
+- Implémentation backend de l'appel REST pour l'ajout claims.
 
-## How to take it further
-- Internationnalisation of Html Pages (to support multiple languages)
-- Deployment of B2C tenant through Powershell script.
-- Improving secret security by using Key Vault in the Library
+## Comment améliorer cette implémentation
+- Support de plusieurs langues pour les pages HTML [Approche recommandé par Micosoft](https://learn.microsoft.com/en-us/azure/active-directory-b2c/customize-ui-with-html?pivots=b2c-user-flow#multi-template-approach)
+- Deploiement du locataire B2C à travers d'un script powershell. 
+- Amélioration de la sécurité de l'appel rest par API key.
+- Centraliser la gestion des secrets en utilisant une Azure Key Vault.

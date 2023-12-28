@@ -1,39 +1,39 @@
-# Use this script locally
+## Utilisation en local
 
-You can setup an environment on your own Azure Subscription to test features.
-When running locally you can also deploy the B2C tenant (just uncomment the b2c deployment in the main.bicep).
-On Azure Devops, it is, for the moment, [impossible to deploy with a Service Principal](https://stackoverflow.com/a/68458174).
+Vous pouvez configurer un environnement sur votre propre abonnement Azure pour tester les fonctionnalités.
+Lorsque vous exécutez localement, vous pouvez également déployer le locataire B2C (décommentez simplement le déploiement b2c dans le fichier main.bicep).
+Sur Azure Devops, il est, pour le moment, [impossible de déployer avec un principal de service](https://stackoverflow.com/a/68458174).
 
-## Requirements
+## Exigences
 - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
-- Your azure subscription (Visit [Visual Studio Subscriptions](https://my.visualstudio.com/?auth_redirect=true) if you haven't activated your subscription yet)
+- Votre abonnement Azure (visitez [Visual Studio Subscriptions](https://my.visualstudio.com/?auth_redirect=true) si vous n'avez pas encore activé votre abonnement)
 
 ## Instructions
-1. Clone the repo.
-1. In a command line, change directory into the Infra folder
-1. Login with Azure CLI
+1. Clonez le référentiel.
+1. Dans une ligne de commande, changez de répertoire dans le dossier Infra
+1. Connectez-vous avec Azure CLI
     ```ps
     az login
     ```
-1. List the subscriptions your account has access to
+1. Liste des abonnements auxquels votre compte a accès
     ```ps 
     az account subscription list
-    # You should see your Visual Studio Subscription
+    # Vous devriez voir votre abonnement Visual Studio
     [
         {
             "displayName": "Abonnement Visual Studio Enterprise – MPN",
-            # Record the subscription ID
+            # Enregistrez l'ID d'abonnement
             "subscriptionId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
             [...]
         },
         [...]
         ]
     ```
-1. change the active subscription using the subscription ID
+1. Changez l'abonnement actif en utilisant l'ID d'abonnement
     ```ps
     az account set --subscription "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     ```
-1. Start the Deployment
+1. Démarrez le déploiement
     ```ps
     az deployment sub create --location canadacentral --template-file ./main.bicep --parameters environment=dev location=canadacentral resourceGroupExists=false applicationName=#giveitaname
     ```
