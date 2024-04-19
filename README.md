@@ -12,6 +12,18 @@ Nous avons intégré dans ces politiques les cas d’utilisation les plus couran
 - Envoi d’e-mails personnalisés pour le mot de passe oublié pour correspondre à la marque de l’entreprise (à l’aide de SendGrid).
 - Extension des claims d’Azure B2C en appelant une API REST lors de la connexion.
 
+Pour ces cas d'usage, nous avons consolidé divers exemples issus du [code source de Microsoft](https://github.com/azure-ad-b2c/samples) et les avons intégrés à [nos politiques de base](https://github.com/NexusInnovation/nexlab.b2c/tree/master/Azure/b2c).
+
+Un défi que nous avons rencontré avec les exemples fournis par Microsoft réside dans le fait qu'ils exposent des variables d'environnement en texte clair. Dans le contexte où plusieurs environnements distincts sont nécessaires, tels qu'un environnement de production et un autre de test, il est impératif de modifier ces valeurs en clair, soit manuellement, soit via un script, avant leur déploiement en production. Cet aspect a été une priorité pour nous afin d'accroître significativement l’efficacité de nos processus.
+
+Pour y remédier, nous avons retravaillé ces politiques afin de paramétrer les informations sensibles, comme le nom du locataire, les comptes de stockage pour les fichiers HTML, les adresses API, les clés API, et les identifiants des applications. Ensuite, grâce à des scripts PowerShell, nous avons remplacé ces données par celles spécifiques à chaque environnement et procédé au déploiement sécurisé (via le client credentials flow) de ces fichiers modifiés dans les environnements B2C appropriés. Cette procédure a été intégrée dans des pipelines Azure, facilitant des déploiements continus en cas de modifications.
+
+Un des pipelines est dédié à la création d'un compte de stockage pour les fichiers HTML utilisés dans les pages de connexion et d'inscription. Ce pipeline doit être exécuté en premier.
+
+Un second pipeline déploie ensuite les fichiers HTML sur le compte de stockage et les politiques personnalisées sur l'environnement B2C. Avant d'utiliser ce pipeline de déploiement, une configuration manuelle du locataire Azure B2C est nécessaire.
+
+Une fois la configuration complète et le pipeline exécuté, cinq politiques seront disponibles dans le locataire B2C. Elles définissent de façon hiérarchique les composants utilisés pour la connexion et l’inscription. Via l’interface d'Azure B2C, il est possible de tester la politique de connexion et de visualiser la page personnalisée à l’image de votre entreprise.
+
 *Il est important de noter que [Microsoft Entra ID for Customers](https://learn.microsoft.com/en-us/entra/external-id/customers/overview-customers-ciam) est présentemment en "Preview" et visera à remplacer Azure B2C prochainement.*
 
 ## Configuration 
